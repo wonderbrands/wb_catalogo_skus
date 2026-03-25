@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_wb_product_template" model="ir.actions.act_window">
+        <field name="name">Plantillas de Producto</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_filter_to_sell': 1}</field>
+    </record>
+
+    <record id="action_wb_product_variant" model="ir.actions.act_window">
+        <field name="name">Variantes de Producto</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+    <menuitem id="menu_wb_catalogo_root"
+              name="Catálogo de productos"
+              web_icon="wb_catalogo_skus,static/description/icon.png"
+              sequence="15"/>
+
+    <menuitem id="menu_wb_catalogo_template"
+              name="Plantillas"
+              parent="menu_wb_catalogo_root"
+              action="action_wb_product_template"
+              sequence="10"/>
+
+    <menuitem id="menu_wb_catalogo_variant"
+              name="Variantes"
+              parent="menu_wb_catalogo_root"
+              action="action_wb_product_variant"
+              sequence="20"/>
+</odoo>

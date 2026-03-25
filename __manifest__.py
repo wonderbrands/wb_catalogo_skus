@@ -8,11 +8,14 @@
     'author': "Sergio Guerrero",
     'category': 'Inventory',
     'version': '18.0.1.0',
-    'depends': ['base', 'product', 'stock'],
+    'depends': ['base', 'product', 'stock', 'mrp'],
     'application': True,
     'sequence': 10,
     'data': [
-        'views/catalogue_menus.xml',
+        'security/security.xml',
+        #'views/catalogue_menus.xml',
+        'views/product_product_view.xml',
         'views/catalogue_search.xml',
+        'data/cron.xml',
     ],
 }

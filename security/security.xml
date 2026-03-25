@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="group_data_admin" model="res.groups">
+            <field name="name">Administrador Data</field>
+            <field name="category_id" ref="base.module_category_hidden"/> <field name="comment">Grupo con permisos especiales para Data.</field>
+        </record>
+    </data>
+</odoo>

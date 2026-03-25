@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         CRON JOB: Creación automática de bases almacenables
+         
+         Ejecuta cada 5 minutos. Busca vendibles salable_yuju recién
+         creados (últimos 10 min) sin storable_base_id y decide:
+           - Sin BoM → crea clon almacenable + BoM Phantom 1:1
+           - Con BoM → detecta combo/multicaja y procesa según caso
+         ═══════════════════════════════════════════════════════════════════ -->
+    <record id="cron_create_storable_bases" model="ir.cron">
+        <field name="name">Catálogo: Crear Bases Almacenables desde Yuju</field>
+        <field name="model_id" ref="product.model_product_product"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_create_storable_bases()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active">True</field>
+        <field name="priority">100</field>
+    </record>
+
+</odoo>

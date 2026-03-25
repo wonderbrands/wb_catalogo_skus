@@ -1,21 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_product_template_search_wb" model="ir.ui.view">
-        <field name="name">product.template.search.wb.multicaja</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_search_view"/>
+    <record id="view_product_product_search_wb" model="ir.ui.view">
+        <field name="name">product.product.search.wb.filtros</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_search_form_view"/>
         <field name="arch" type="xml">
-            
+
             <xpath expr="//filter[@name='filter_to_sell']" position="after">
                 <separator/>
-                <filter string="SKUs de Cajas (#BOX)" 
-                        name="filter_is_box" 
-                        domain="[('default_code', 'ilike', '#BOX')]"/>
-                
-                <filter string="Ocultar Cajas (#BOX)" 
-                        name="filter_no_box" 
-                        domain="[('default_code', 'not ilike', '#BOX')]"/>
+
+                <!-- ── Filtros por Rol (data_entity_type) ── -->
+                <filter string="Vendibles (Yuju)"
+                        name="filter_sellable"
+                        domain="[('data_entity_type', '=', 'salable_yuju')]"/>
+                <filter string="Almacenables Base"
+                        name="filter_storable"
+                        domain="[('data_entity_type', '=', 'storable')]"/>
+                <filter string="Consumibles Internos"
+                        name="filter_consumible"
+                        domain="[('data_entity_type', '=', 'internal_consu')]"/>
+
                 <separator/>
+
+                <!-- ── Filtros por Estructura (product_structure) ── -->
+                <filter string="Simples (1:1)"
+                        name="filter_simple"
+                        domain="[('product_structure', '=', 'simple')]"/>
+                <filter string="Combos Reales"
+                        name="filter_combo"
+                        domain="[('product_structure', '=', 'combo')]"/>
+                <filter string="Multicaja"
+                        name="filter_multibox"
+                        domain="[('product_structure', '=', 'multibox')]"/>
+
+                <separator/>
+            </xpath>
+
+            <!-- ── Agrupadores ── -->
+            <xpath expr="//group[@expand='1']" position="inside">
+                <filter string="Categoría"
+                        name="groupby_category"
+                        context="{'group_by': 'categ_id'}"/>
+                <filter string="Rol del Producto"
+                        name="groupby_entity_type"
+                        context="{'group_by': 'data_entity_type'}"/>
+                <filter string="Estructura"
+                        name="groupby_structure"
+                        context="{'group_by': 'product_structure'}"/>
+            </xpath>
+
+            <!-- ── Search Panel lateral ── -->
+            <xpath expr="//search" position="inside">
+                <searchpanel>
+                    <field name="categ_id"
+                           icon="fa-folder"
+                           enable_counters="1"
+                           string="Categorías"/>
+                    <field name="data_entity_type"
+                           icon="fa-cube"
+                           enable_counters="1"
+                           string="Rol del Producto"/>
+                    <field name="product_structure"
+                           icon="fa-sitemap"
+                           enable_counters="1"
+                           string="Estructura"/>
+                </searchpanel>
             </xpath>
 
         </field>

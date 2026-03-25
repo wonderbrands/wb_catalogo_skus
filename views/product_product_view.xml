@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══════════════════════════════════════════
+         ACCIONES
+    ══════════════════════════════════════════ -->
+
+    <record id="action_wb_product_variant_all" model="ir.actions.act_window">
+        <field name="name">Todas las Variantes (SKUs)</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+    <record id="action_wb_product_variant_sellable" model="ir.actions.act_window">
+        <field name="name">Productos Vendibles (Yuju)</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('data_entity_type', '=', 'salable_yuju')]</field>
+    </record>
+
+    <record id="action_wb_product_variant_storable" model="ir.actions.act_window">
+        <field name="name">Bases Almacenables (Físicos)</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('data_entity_type', '=', 'storable')]</field>
+    </record>
+
+    <!-- Acción: Solo productos simples (1:1) -->
+    <record id="action_wb_product_variant_simple" model="ir.actions.act_window">
+        <field name="name">Productos Simples (1:1)</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('product_structure', '=', 'simple')]</field>
+    </record>
+
+    <!-- Acción: Combos reales -->
+    <record id="action_wb_product_variant_combo" model="ir.actions.act_window">
+        <field name="name">Combos Reales</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('product_structure', '=', 'combo')]</field>
+    </record>
+
+    <!-- Acción: Multicajas -->
+    <record id="action_wb_product_variant_multibox" model="ir.actions.act_window">
+        <field name="name">Multicajas</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('product_structure', '=', 'multibox')]</field>
+    </record>
+
+    <record id="action_portal_stock_url" model="ir.actions.act_url">
+        <field name="name">Portal de stock</field>
+        <field name="url">/stock</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         MENÚS
+    ══════════════════════════════════════════ -->
+
+    <menuitem id="menu_wb_catalogo_root"
+              name="Catálogo de productos"
+              web_icon="wb_catalogo_skus,static/description/icon.png"
+              sequence="15"/>
+
+    <!-- ── Submenu: SKUs y variantes ── -->
+    <menuitem id="menu_wb_catalogo_variant"
+              name="📦 SKUs y variantes"
+              parent="menu_wb_catalogo_root"
+              sequence="10"/>
+
+    <menuitem id="menu_wb_variant_all"
+              name="Todos los SKUs"
+              parent="menu_wb_catalogo_variant"
+              action="action_wb_product_variant_all"
+              sequence="1"/>
+    <menuitem id="menu_wb_variant_sellable"
+              name="Vendibles (Kits)"
+              parent="menu_wb_catalogo_variant"
+              action="action_wb_product_variant_sellable"
+              sequence="2"/>
+    <menuitem id="menu_wb_variant_storable"
+              name="Almacenables Base"
+              parent="menu_wb_catalogo_variant"
+              action="action_wb_product_variant_storable"
+              sequence="3"/>
+
+    <!-- ── Submenu: Estructuras de producto ── -->
+    <menuitem id="menu_wb_catalogo_structure"
+              name="📐 Estructuras"
+              parent="menu_wb_catalogo_root"
+              sequence="20"/>
+
+    <menuitem id="menu_wb_variant_simple"
+              name="Simples (1:1)"
+              parent="menu_wb_catalogo_structure"
+              action="action_wb_product_variant_simple"
+              sequence="1"/>
+    <menuitem id="menu_wb_variant_combo"
+              name="Combos Reales"
+              parent="menu_wb_catalogo_structure"
+              action="action_wb_product_variant_combo"
+              sequence="2"/>
+    <menuitem id="menu_wb_variant_multibox"
+              name="Multicajas"
+              parent="menu_wb_catalogo_structure"
+              action="action_wb_product_variant_multibox"
+              sequence="3"/>
+
+    <menuitem id="menu_wb_catalogo_stock_portal"
+              name="🌐 Portal de Stock"
+              parent="menu_wb_catalogo_root"
+              sequence="30"/>
+
+    <!-- ══════════════════════════════════════════
+         VISTA FORM — product.product
+    ══════════════════════════════════════════ -->
+    <record id="view_product_product_form_data_base" model="ir.ui.view">
+        <field name="name">product.product.form.data.base.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='default_code']" position="after">
+
+                <!-- Rol del producto: badge con color por tipo -->
+                <field name="data_entity_type"
+                       widget="badge"
+                       decoration-success="data_entity_type == 'storable'"
+                       decoration-info="data_entity_type == 'salable_yuju'"
+                       decoration-warning="data_entity_type == 'internal_consu'"/>
+
+                <!-- Estructura: solo visible para vendibles -->
+                <field name="product_structure"
+                       widget="badge"
+                       readonly="1"
+                       invisible="data_entity_type != 'salable_yuju'"
+                       decoration-info="product_structure == 'simple'"
+                       decoration-success="product_structure == 'combo'"
+                       decoration-warning="product_structure == 'multibox'"/>
+
+                <!--
+                    is_internal_consu: widget="boolean" (checkbox clásico)
+                    En Odoo 18 boolean_toggle ejecuta save inmediato.
+                    Con widget="boolean" requiere guardar manualmente.
+                    Solo visible cuando es storable (no aplica a vendibles).
+                -->
+                <field name="is_internal_consu"
+                       string="Marcar como Consumible Interno"
+                       invisible="data_entity_type == 'salable_yuju'"
+                       widget="boolean"/>
+
+                <field name="data_product_id" readonly="1"/>
+
+                <!-- Base almacenable vinculada: solo para vendibles -->
+                <field name="storable_base_id"
+                       readonly="1"
+                       invisible="data_entity_type != 'salable_yuju'"/>
+
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         VISTA LIST — product.product
+         Columnas adicionales de catálogo
+    ══════════════════════════════════════════ -->
+    <record id="view_product_product_tree_catalog" model="ir.ui.view">
+        <field name="name">product.product.tree.catalog.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="after">
+                <field name="data_entity_type"
+                       optional="show"
+                       string="Rol"
+                       widget="badge"
+                       decoration-success="data_entity_type == 'storable'"
+                       decoration-info="data_entity_type == 'salable_yuju'"
+                       decoration-warning="data_entity_type == 'internal_consu'"/>
+                <field name="product_structure"
+                       optional="hide"
+                       string="Estructura"
+                       widget="badge"
+                       decoration-info="product_structure == 'simple'"
+                       decoration-success="product_structure == 'combo'"
+                       decoration-warning="product_structure == 'multibox'"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,10 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="action_wb_product_template" model="ir.actions.act_window">
-        <field name="name">Plantillas de Producto</field>
+        <field name="name">Todas las Plantillas</field>
         <field name="res_model">product.template</field>
         <field name="view_mode">kanban,list,form</field>
-        <field name="context">{'search_default_filter_to_sell': 1}</field>
+    </record>
+
+    <record id="action_wb_product_template_sellable" model="ir.actions.act_window">
+        <field name="name">Productos Vendibles</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_filter_sellable': 1}</field>
+    </record>
+
+    <record id="action_wb_product_template_storable" model="ir.actions.act_window">
+        <field name="name">Productos Almacenables</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_filter_storable': 1}</field>
+    </record>
+
+    <record id="action_wb_product_template_consumable" model="ir.actions.act_window">
+        <field name="name">Productos Consumibles</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_filter_consumable': 1}</field>
+    </record>
+
+    <record id="action_wb_product_template_multibox" model="ir.actions.act_window">
+        <field name="name">Multicajas (Combos)</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'search_default_filter_is_multibox': 1}</field>
     </record>
 
     <record id="action_wb_product_variant" model="ir.actions.act_window">
@@ -13,20 +40,52 @@
         <field name="view_mode">kanban,list,form</field>
     </record>
 
+    <record id="action_portal_stock_url" model="ir.actions.act_url">
+        <field name="name">Portal de stock</field>
+        <field name="url">/stock</field>
+        <field name="target">new</field> 
+    </record>
+
     <menuitem id="menu_wb_catalogo_root"
               name="Catálogo de productos"
               web_icon="wb_catalogo_skus,static/description/icon.png"
               sequence="15"/>
 
     <menuitem id="menu_wb_catalogo_template"
-              name="Plantillas"
+              name="📚 Plantillas (Filtros)"
               parent="menu_wb_catalogo_root"
-              action="action_wb_product_template"
               sequence="10"/>
+
+        <menuitem id="menu_wb_plantillas_all" name="Todas" parent="menu_wb_catalogo_template" action="action_wb_product_template" sequence="1"/>
+        <menuitem id="menu_wb_plantillas_sellable" name="Vendibles" parent="menu_wb_catalogo_template" action="action_wb_product_template_sellable" sequence="2"/>
+        <menuitem id="menu_wb_plantillas_storable" name="Almacenables" parent="menu_wb_catalogo_template" action="action_wb_product_template_storable" sequence="3"/>
+        <menuitem id="menu_wb_plantillas_consumable" name="Consumibles" parent="menu_wb_catalogo_template" action="action_wb_product_template_consumable" sequence="4"/>
+        <menuitem id="menu_wb_plantillas_multibox" name="Multicajas" parent="menu_wb_catalogo_template" action="action_wb_product_template_multibox" sequence="5"/>
 
     <menuitem id="menu_wb_catalogo_variant"
               name="Variantes"
               parent="menu_wb_catalogo_root"
               action="action_wb_product_variant"
               sequence="20"/>
+
+    <menuitem id="menu_wb_catalogo_stock_portal"
+              name="🌐 Portal de Stock"
+              parent="menu_wb_catalogo_root"
+              action="action_portal_stock_url"
+              sequence="30"/>
+
+    <record id="view_product_template_form_data_base" model="ir.ui.view">
+        <field name="name">product.template.form.data.base</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="after">
+                <group name="wb_data_group">
+                    <field name="data_product_id" readonly="1" groups="!wb_catalogo_skus.group_data_admin"/>
+                    <field name="data_product_id" readonly="0" groups="wb_catalogo_skus.group_data_admin"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
